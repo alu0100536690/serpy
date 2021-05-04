@@ -103,7 +103,17 @@ class SerpsGoogle(CrawlSpider):
         description = []       
         preguntas_relacionadas = []
         busquedas_relacionadas = []
+
+       # Order these in order of preference
+        description_selectors = [
+            {"name": "description"},
+            {"name": "og:description"},
+            {"property": "description"}
+        ]
+
         ArrayURLSERPS = []
+
+ 
 
         sel = Selector(response)
         urlSerps = sel.xpath('//*[@id="center_col"]')
@@ -114,31 +124,53 @@ class SerpsGoogle(CrawlSpider):
         item.add_xpath('preguntas_relacionadas', '//g-accordion-expander/descendant::div/text()')
         item.add_xpath('busquedas_relacionadas', '//*[@id="w3bYAd"]/div/div/div/div/a/div[2]', MapCompose(self.limpiartexto))
         
-        title = sel.xpath('//h3/text()').extract()
-        item.add_value('title', title) 
+        #title = sel.xpath('//h3/text()').extract() #Coge el título incompleto desde google
+        #item.add_value('title', title) 
         
         ArrayURLSERPS = item.get_collected_values('url') #Array de urls de la serps
         
         for x in range(0,len(ArrayURLSERPS)):
             try:
-                reqs = requests.get(ArrayURLSERPS[x], timeout=5)			   
+                reqs = requests.get(ArrayURLSERPS[x], timeout=5)
+                #status = response.status_code
+                #print("\n\n\nEl STATUS DE ", ArrayURLSERPS[x], "ES : ", status)			   
                 soup = BeautifulSoup(reqs.text, 'lxml')
-               
+
+                if (soup.title is not None):
+                    title.append(soup.title.string)
+                #else:
+                     #title.append('')              
+
+                for selector in description_selectors:
+                    description_tag = soup.find(attrs=selector)
+                    if description_tag and description_tag.get('content'):
+                        description.append(description_tag['content'])                                                
+                        break
+                    
+                    #else:
+                        #description.append('')
+                        #desciption.add_value('')
+
             except:
                 continue
+            
 			
-				
-            for heading in soup.find_all(["h1", "h2", "h3"]):
-                
-					
+            for heading in soup.find_all(["h1", "h2", "h3"]):                    
+                    
                 if(heading.name == "h1"):
                     h1.append(heading.text.strip())
+                #else:
+                    #h1.append('')
+
                 if(heading.name == "h2"):
-                    h2.append(heading.text.strip())
+                    h2.append(heading.text.strip())                
+
                 if(heading.name == "h3"):
-                    h3.append(heading.text.strip())
+                    h3.append(heading.text.strip())  
+                			
 
 
+        item.add_value('title', title)
         item.add_value('h1', h1)
         item.add_value('h2', h2)
         item.add_value('h3', h3)
@@ -148,8 +180,8 @@ class SerpsGoogle(CrawlSpider):
         
         yield item.load_item()
         
-        title = item.get_collected_values('title')
-        description = item.get_collected_values('description')
+        #title = item.get_collected_values('title')
+        #description = item.get_collected_values('description')
         preguntas_relacionadas = item.get_collected_values('preguntas_relacionadas')
         busquedas_relacionadas = item.get_collected_values('busquedas_relacionadas')
 
