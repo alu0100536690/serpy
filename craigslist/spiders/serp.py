@@ -12,8 +12,8 @@ import time
 import pandas as pd
 from openpyxl import Workbook
 from openpyxl.writer.excel import save_virtual_workbook
-#from scrapy.linkextractors import LinkExtractor
 
+from misLibrerias.contarPalabras import densidad_palabra
 
 class DatosSerps(Item):
     url = Field()
@@ -185,9 +185,26 @@ class SerpsGoogle(CrawlSpider):
         preguntas_relacionadas = item.get_collected_values('preguntas_relacionadas')
         busquedas_relacionadas = item.get_collected_values('busquedas_relacionadas')
 
-        print("Importando datos...")    
+        print("Importando datos...")  
+
+         
+        densidad_palabras = densidad_palabra(str(title+h1+h2+h3+description), 50)
 		
+        palabras = []
+        repeticiones = []
+        densidad = []
+
+        for x in densidad_palabras:
+            palabras.append(x[0])
+            repeticiones.append(x[1])
+            densidad.append(x[2])
+
+
+
         data1 = {
+            'Palabras': palabras,
+            'Repeticiones': repeticiones,
+            'Densidad %': densidad,
             'Title': title,
             'H1': h1,
             'H2': h2,
@@ -206,7 +223,8 @@ class SerpsGoogle(CrawlSpider):
 
         #Escribir en excel nuevo o borrando los datos anteriores 
         with pd.ExcelWriter('file.xlsx') as writer:            
-            df1.to_excel(writer, sheet_name='ANÁLISIS COMPETENCIA', freeze_panes=(1,1), index=False)
+            df1.to_excel(writer, columns=["Title","H1","H2","H3","Preguntas relacionadas","Búsquedas relacionadas","Descripción", "URL"], sheet_name="ANÁLISIS COMPETENCIA", freeze_panes=(1,1), index=False)
+            df1.to_excel(writer, columns=["Palabras","Repeticiones","Densidad %"], sheet_name="PALABRAS CLAVE COMPETENCIA", freeze_panes=(1,1), index=False)
 
 
 #scrapy crawl serp -a busqueda="mejores carritos de bebe" -a num_resultados_serps=10 -a idioma=es -a pais=ES -a motor=google.es
