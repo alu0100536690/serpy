@@ -187,7 +187,7 @@ class SerpsGoogle(CrawlSpider):
 
         print("Importando datos...")    
 		
-        data = {
+        data1 = {
             'Title': title,
             'H1': h1,
             'H2': h2,
@@ -198,12 +198,15 @@ class SerpsGoogle(CrawlSpider):
             'URL': ArrayURLSERPS
   
         }
+        df1 = pd.DataFrame.from_dict(data1, orient='index')
+        df1 = df1.transpose()
+       	
+        #Escribir en excel existente sin borrar los datos anteriores
+        #with pd.ExcelWriter('file.xlsx', mode='a', engine='openpyxl') as writer:
 
-        df = pd.DataFrame.from_dict(data, orient='index')
-        df = df.transpose()		
-        #df = pd.DataFrame(data)
-        df.to_excel("file.xlsx")
-        #print("\n\n LA TABLA ES: ", df)
+        #Escribir en excel nuevo o borrando los datos anteriores 
+        with pd.ExcelWriter('file.xlsx') as writer:            
+            df1.to_excel(writer, sheet_name='ANÁLISIS COMPETENCIA', freeze_panes=(1,1), index=False)
 
 
 #scrapy crawl serp -a busqueda="mejores carritos de bebe" -a num_resultados_serps=10 -a idioma=es -a pais=ES -a motor=google.es
