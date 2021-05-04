@@ -55,10 +55,6 @@ class SerpsGoogle(CrawlSpider):
             # URL SEMILLA
             self.start_urls.append('https://www.'+str(motor)+'/search?q='+str(search)+'&num='+str(num_resultados)+'&gl='+str(pais)+'&hl='+str(idioma))
 
-        
-       
-        
-    
 
     custom_settings = {
  
@@ -84,9 +80,6 @@ class SerpsGoogle(CrawlSpider):
     
 
 
-
-
-    
     def limpiartexto(self, texto):
      
         nuevoTexto = re.sub(r'<[^>]*>','',texto) #limpiar texto con expresiones regulares
@@ -188,7 +181,7 @@ class SerpsGoogle(CrawlSpider):
         print("Importando datos...")  
 
          
-        densidad_palabras = densidad_palabra(str(title+h1+h2+h3+description), 50)
+        densidad_palabras = densidad_palabra(str(title+h1+h2+h3+description), 100) #numero de palabras claves que quiero obtener
 		
         palabras = []
         repeticiones = []
