@@ -21,3 +21,4 @@ appdirs==1.4.4
 websockets==8.1
 deepl-cli==0.0.14
 pyppeteer==0.2.5
+nltk==3.6.2
