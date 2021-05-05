@@ -9,14 +9,12 @@ from bs4 import BeautifulSoup
 import requests
 import re
 import time
-import pandas as pd
-from openpyxl import Workbook
-from openpyxl.writer.excel import save_virtual_workbook
-from misLibrerias.contarPalabras import densidad_palabra
 
-import gspread
-from gspread_dataframe import get_as_dataframe, set_with_dataframe
-from gspread_formatting.dataframe import format_with_dataframe
+from misLibrerias.lenguajeNatural.contarPalabras import densidad_palabra
+from misLibrerias.exportacionDatos.exportarGoogleSheet import getGoogleSheet
+from misLibrerias.exportacionDatos.exportarExcel import getExcel
+
+
 
 class DatosSerps(Item):
     url = Field()
@@ -195,9 +193,6 @@ class SerpsGoogle(CrawlSpider):
             repeticiones.append(x[1])
             densidad.append(x[2])
 
-
-
-
         data1 = {
             'Palabras': palabras,
             'Repeticiones': repeticiones,
@@ -212,36 +207,14 @@ class SerpsGoogle(CrawlSpider):
             'URL': ArrayURLSERPS
   
         }
-        df1 = pd.DataFrame.from_dict(data1, orient='index')
-        df1 = df1.transpose()
 
-        #Escribir en google sheet
-        #https://www.youtube.com/watch?v=A1URtaaA-v0
-        #Claves de API
-        gc = gspread.service_account(filename='claves-drive.json')
 
-        sh = gc.create('Hola-mundo') #Crea un sheet llamado "Hola mundo"
-        sh.share('mibebebelloes@gmail.com', perm_type='user', role='writer')
+        getGoogleSheet(data1) #Crea fichero Google sheet
+        getExcel(data1) #Crea fichero Excel
+       
 
-        #Abre un sheet existente, en este caso, "Hola-mundo"
-        sh = gc.open("Hola-mundo")
 
-        # Seleccionar primera hoja
-
-        worksheet = sh.get_worksheet(0)
-        set_with_dataframe(worksheet, df1)
-        format_with_dataframe(worksheet, df1, include_column_header=True)
-        df2 = get_as_dataframe(worksheet)
-
-       	
-        #Escribir en excel existente sin borrar los datos anteriores
-        #with pd.ExcelWriter('file.xlsx', mode='a', engine='openpyxl') as writer:
-
-        #Escribir en excel nuevo o borrando los datos anteriores 
-        with pd.ExcelWriter('file.xlsx') as writer:            
-            df1.to_excel(writer, columns=["Title","H1","H2","H3","Preguntas relacionadas","Búsquedas relacionadas","Descripción", "URL"], sheet_name="ANÁLISIS COMPETENCIA", freeze_panes=(1,1), index=False)
-            df1.to_excel(writer, columns=["Palabras","Repeticiones","Densidad %"], sheet_name="PALABRAS CLAVE COMPETENCIA", freeze_panes=(1,1), index=False)
-
+        
 
 #scrapy crawl serp -a busqueda="mejores carritos de bebe" -a num_resultados_serps=10 -a idioma=es -a pais=ES -a motor=google.es
 #con process ejecuto scrapy automáticamente sin escribir -> scrapy crawl .....
