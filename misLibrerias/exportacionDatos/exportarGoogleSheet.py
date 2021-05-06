@@ -21,12 +21,14 @@ def getGoogleSheet(data1):
     # Seleccionar primera hoja
 
     #worksheet = sh.get_worksheet(0)     
-    #sh.del_worksheet(worksheet)
+    
 
     worksheet = sh.add_worksheet(title="ANÁLISIS COMPETENCIA", rows="1000", cols="20")
     
     set_with_dataframe(worksheet, df1)
     format_with_dataframe(worksheet, df1, include_column_header=True)
     #df2 = get_as_dataframe(worksheet)
+
+    sh.del_worksheet(sh.get_worksheet(0)) #Elimina la hoja "Sheet1" que sale por defecto.
 
 

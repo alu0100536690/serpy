@@ -216,7 +216,7 @@ class SerpsGoogle(CrawlSpider):
 
         
 
-#scrapy crawl serp -a busqueda="mejores carritos de bebe" -a num_resultados_serps=10 -a idioma=es -a pais=ES -a motor=google.es
+#scrapy crawl serp -a busqueda="mejores carritos de bebe" -a num_resultados_serps=10 -a idioma=es -a pais=ES -a motor=google.es --nolog
 #con process ejecuto scrapy automáticamente sin escribir -> scrapy crawl .....
 #process = CrawlerProcess()
 #process.crawl(SerpsGoogle)
