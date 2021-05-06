@@ -2,6 +2,7 @@ import nltk
 from nltk.corpus import stopwords
 nltk.download('stopwords')
 import re
+from misLibrerias.lenguajeNatural.tuplaAgregarElemento import tuple_insert
 
 def densidad_palabra(texto, num_palabras):
 
@@ -30,10 +31,6 @@ def densidad_palabra(texto, num_palabras):
 
 
 #---------------------------------------------------------------------
-
-	def tuple_insert(tup,pos,ele): #Función necesaria para poder añadir el % de densidad de palabra clave a la tupla (palabra, repeticiones)
-		tup = tup[:pos]+(ele,)+tup[pos:]
-		return tup
 
 	
 	for x in freq.most_common(num_palabras):

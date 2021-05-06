@@ -91,12 +91,19 @@ class SerpsGoogle(CrawlSpider):
         
         data = []        
         title = []
-        h1 = []
-        h2 = []
-        h3 = []        
+        nT = []
+        nH1 = []
+        h1 = []        
+        nH2 = []
+        h2 = []        
+        nH3 = []
+        h3 = []
+        nDescription = []        
         description = []       
         preguntas_relacionadas = []
         busquedas_relacionadas = []
+        nArrayURLSERPS = []
+        ArrayURLSERPS = []
 
        # Order these in order of preference
         description_selectors = [
@@ -105,7 +112,8 @@ class SerpsGoogle(CrawlSpider):
             {"property": "description"}
         ]
 
-        ArrayURLSERPS = []
+
+        
 
  
 
@@ -124,6 +132,7 @@ class SerpsGoogle(CrawlSpider):
         ArrayURLSERPS = item.get_collected_values('url') #Array de urls de la serps
         
         for x in range(0,len(ArrayURLSERPS)):
+            nArrayURLSERPS.append(x+1)
             try:
                 reqs = requests.get(ArrayURLSERPS[x], timeout=5)
                 #status = response.status_code
@@ -132,13 +141,16 @@ class SerpsGoogle(CrawlSpider):
 
                 if (soup.title is not None):
                     title.append(soup.title.string)
+                    nT.append(x+1)
                 #else:
-                     #title.append('')              
+                    #title.append('')
+                    #nT.append(x+1)              
 
                 for selector in description_selectors:
                     description_tag = soup.find(attrs=selector)
                     if description_tag and description_tag.get('content'):
-                        description.append(description_tag['content'])                                                
+                        description.append(description_tag['content'])
+                        nDescription.append(x+1)                                             
                         break
                     
                     #else:
@@ -153,15 +165,15 @@ class SerpsGoogle(CrawlSpider):
                     
                 if(heading.name == "h1"):
                     h1.append(heading.text.strip())
-                #else:
-                    #h1.append('')
+                    nH1.append(x+1)
 
                 if(heading.name == "h2"):
                     h2.append(heading.text.strip())                
+                    nH2.append(x+1)
 
                 if(heading.name == "h3"):
                     h3.append(heading.text.strip())  
-                			
+                    nH3.append(x+1)		
 
 
         item.add_value('title', title)
@@ -197,17 +209,25 @@ class SerpsGoogle(CrawlSpider):
             'Palabras': palabras,
             'Repeticiones': repeticiones,
             'Densidad %': densidad,
-            'Title': title,
-            'H1': h1,
+            'nT': nT,
+            'Title': title,            
+            'nH1': nH1,
+            'H1': h1,            
+            'nH2': nH2,
             'H2': h2,
+            'nH3': nH3,
             'H3': h3,
             'Preguntas relacionadas': preguntas_relacionadas,
             'Búsquedas relacionadas': busquedas_relacionadas,
+            'nDescripción': nDescription,
             'Descripción': description,
+            'nURL': nArrayURLSERPS,
             'URL': ArrayURLSERPS
   
         }
+        
 
+        
 
         getGoogleSheet(data1) #Crea fichero Google sheet
         getExcel(data1) #Crea fichero Excel
