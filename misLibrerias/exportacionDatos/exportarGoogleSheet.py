@@ -2,10 +2,12 @@ import pandas as pd
 import gspread
 from gspread_dataframe import get_as_dataframe, set_with_dataframe
 from gspread_formatting.dataframe import format_with_dataframe
+from gspread_formatting import *
+
 
 def getGoogleSheet(data):
 
-    print("\n\nEL DATA TITLE ES: ", data['Title'])
+    #print("\n\nEL DATA TITLE ES: ", data['Title'])
     dfAnalisisCompetencia = {
         'Pos nT': data['nT'],
         'Title': data['Title'],
@@ -15,14 +17,14 @@ def getGoogleSheet(data):
         'H2': data['H2'],
         'Pos H3': data['nH3'],
         'H3': data['H3'],
-        'Pos desc': data['nDescripción'],
+        'Pos dsc': data['nDescripción'],
         'Descripción': data['Descripción'],
         'Pos URL': data['nURL'],
         'URL': data['URL']
 
-    } 
+    }
 
-    print("\n\n\n",dfAnalisisCompetencia,"\n\n\n")
+    #print("\n\n\n",dfAnalisisCompetencia,"\n\n\n")
 
     dfDensidadPalabra = {
         'Palabras': data['Palabras'],
@@ -31,11 +33,17 @@ def getGoogleSheet(data):
 
     }
  
-    print("\n\n\n",dfDensidadPalabra,"\n\n\n")
+    #print("\n\n\n",dfDensidadPalabra,"\n\n\n")
 
     
     df1 = pd.DataFrame.from_dict(dfAnalisisCompetencia, orient='index')
     df1 = df1.transpose()
+
+
+    for column in df1: #Redefine tamaño de celda
+        print(column,"->", df1[column].astype(str).str.len().max()*8)
+
+
 
     df2 = pd.DataFrame.from_dict(dfDensidadPalabra, orient='index')
     df2 = df2.transpose()
@@ -44,8 +52,8 @@ def getGoogleSheet(data):
     #Claves de API
     gc = gspread.service_account(filename='claves-drive.json')
 
-    sh = gc.create('Hola-mundo') #Crea un sheet llamado "Hola mundo"
-    sh.share('mibebebelloes@gmail.com', perm_type='user', role='writer')
+    #sh = gc.create('Hola-mundo') #Crea un sheet llamado "Hola mundo"
+    #sh.share('mibebebelloes@gmail.com', perm_type='user', role='writer')
 
     #Abre un sheet existente, en este caso, "Hola-mundo"
     sh = gc.open("Hola-mundo") 
@@ -65,6 +73,11 @@ def getGoogleSheet(data):
     
     set_with_dataframe(analisisCompetencia, df1)
     format_with_dataframe(analisisCompetencia, df1, include_column_header=True)
+    
+    
  
     set_with_dataframe(densidadPalabra, df2)
     format_with_dataframe(densidadPalabra, df2, include_column_header=True)
+
+    set_frozen(sh.get_worksheet(0), rows=1, cols=0)
+    set_column_widths(sh.get_worksheet(0), [ ('A', 64), ('B:', 568), ('C:', 64), ('D:', 528), ('E:', 64), ('F:', 600), ('G:', 64), ('H:', 768), ('I:', 64), ('J:', 1304), ('K:', 64), ('L:', 912) ])

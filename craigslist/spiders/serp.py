@@ -142,9 +142,9 @@ class SerpsGoogle(CrawlSpider):
                 if (soup.title is not None):
                     title.append(soup.title.string)
                     nT.append(x+1)
-                #else:
-                    #title.append('')
-                    #nT.append(x+1)              
+                else:
+                    title.append('')                  
+                    nT.append(x+1)
 
                 for selector in description_selectors:
                     description_tag = soup.find(attrs=selector)
@@ -153,27 +153,39 @@ class SerpsGoogle(CrawlSpider):
                         nDescription.append(x+1)                                             
                         break
                     
-                    #else:
-                        #description.append('')
-                        #desciption.add_value('')
+                    else:
+                        nDescription.append(x+1)
+                        description.append('')
+                        desciption.add_value('')
+                        break
 
             except:
                 continue
             
 			
-            for heading in soup.find_all(["h1", "h2", "h3"]):                    
-                    
+            for heading in soup.find_all(["h1"]):         
                 if(heading.name == "h1"):
                     h1.append(heading.text.strip())
                     nH1.append(x+1)
+                else:
+                    h1.append('')
+                    nH1.append(x+1)
 
+            for heading in soup.find_all(["h2"]):         
                 if(heading.name == "h2"):
-                    h2.append(heading.text.strip())                
+                    h2.append(heading.text.strip())
+                    nH2.append(x+1)
+                else:
+                    h2.append('')
                     nH2.append(x+1)
 
+            for heading in soup.find_all(["h3"]):         
                 if(heading.name == "h3"):
-                    h3.append(heading.text.strip())  
-                    nH3.append(x+1)		
+                    h3.append(heading.text.strip())
+                    nH3.append(x+1)
+                else:
+                    h3.append('')
+                    nH3.append(x+1)
 
 
         item.add_value('title', title)
