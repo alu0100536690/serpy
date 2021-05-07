@@ -5,6 +5,16 @@ from gspread_formatting.dataframe import format_with_dataframe
 from gspread_formatting import *
 
 
+def redimencionarCelda(dataframe):
+    anchoCelda = []
+    for column in dataframe: #Redefine tamaño de celda
+        anchoCelda.append(dataframe[column].astype(str).str.len().max()*8)      
+
+    return anchoCelda
+       
+       
+        #set_column_widths(sh.get_worksheet(0), [ ('A', 64), ('B:', 568), ('C:', 64), ('D:', 528), ('E:', 64), ('F:', 600), ('G:', 64), ('H:', 768), ('I:', 64), ('J:', 1304), ('K:', 64), ('L:', 912) ])
+
 def getGoogleSheet(data):
 
     #print("\n\nEL DATA TITLE ES: ", data['Title'])
@@ -38,10 +48,6 @@ def getGoogleSheet(data):
     
     df1 = pd.DataFrame.from_dict(dfAnalisisCompetencia, orient='index')
     df1 = df1.transpose()
-
-
-    for column in df1: #Redefine tamaño de celda
-        print(column,"->", df1[column].astype(str).str.len().max()*8)
 
 
 
@@ -80,4 +86,14 @@ def getGoogleSheet(data):
     format_with_dataframe(densidadPalabra, df2, include_column_header=True)
 
     set_frozen(sh.get_worksheet(0), rows=1, cols=0)
-    set_column_widths(sh.get_worksheet(0), [ ('A', 64), ('B:', 568), ('C:', 64), ('D:', 528), ('E:', 64), ('F:', 600), ('G:', 64), ('H:', 768), ('I:', 64), ('J:', 1304), ('K:', 64), ('L:', 912) ])
+
+
+    anchoCelda = redimencionarCelda(df1)
+    print(anchoCelda) #Funcion para redimencionar celda, se pasa dataframe y número de hoja de google sheet.
+
+    for letra, celda in enumerate(anchoCelda):
+        print("LA CELDA ES: ", celda)
+        set_column_width(sh.get_worksheet(0), chr(65+letra), int(celda))
+    
+
+    
