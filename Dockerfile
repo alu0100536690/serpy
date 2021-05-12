@@ -1,5 +1,9 @@
 FROM ubuntu:focal
 
+ENV FLASK_APP app.py
+
+ENV FLASK_RUN_HOST 0.0.0.0
+
 RUN apt-get update && apt-get upgrade -y
 
 RUN DEBIAN_FRONTEND="noninteractive" apt-get -y install tzdata
@@ -18,4 +22,4 @@ COPY . .
 
 RUN pip3 install -r requirements.txt
 
-CMD [ "python3", "./app.py" ]
+CMD [ "flask", "run" ]
