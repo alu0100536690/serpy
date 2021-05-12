@@ -240,9 +240,9 @@ class SerpsGoogle(CrawlSpider):
         
 
         
-
-        getGoogleSheet(data1) #Crea fichero Google sheet
         getExcel(data1) #Crea fichero Excel
+        getGoogleSheet(data1) #Crea fichero Google sheet
+        
        
 
 

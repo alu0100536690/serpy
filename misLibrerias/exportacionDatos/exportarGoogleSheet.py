@@ -3,21 +3,25 @@ import gspread
 from gspread_dataframe import get_as_dataframe, set_with_dataframe
 from gspread_formatting.dataframe import format_with_dataframe
 from gspread_formatting import *
+import numpy as np
 
-
+#https://docs.gspread.org/en/latest/user-guide.html
+#Función que verifica el ancho máximo de una columna
 def redimencionarCelda(dataframe):
     anchoCelda = []
+    AnchoCabecera = []
     for column in dataframe: #Redefine tamaño de celda
-        anchoCelda.append(dataframe[column].astype(str).str.len().max()*8)      
+        anchoCelda.append(dataframe[column].astype(str).str.len().max()*8)
+        
+    for column in list(dataframe.columns.values): 
+        AnchoCabecera.append(len(column)*8)
 
-    return anchoCelda
+    return np.maximum(anchoCelda, AnchoCabecera) #Valor más grande entre la celda mayor y la cabecera.
        
-       
-        #set_column_widths(sh.get_worksheet(0), [ ('A', 64), ('B:', 568), ('C:', 64), ('D:', 528), ('E:', 64), ('F:', 600), ('G:', 64), ('H:', 768), ('I:', 64), ('J:', 1304), ('K:', 64), ('L:', 912) ])
-
+   
 def getGoogleSheet(data):
 
-    #print("\n\nEL DATA TITLE ES: ", data['Title'])
+    
     dfAnalisisCompetencia = {
         'Pos nT': data['nT'],
         'Title': data['Title'],
@@ -33,7 +37,7 @@ def getGoogleSheet(data):
         'URL': data['URL']
 
     }
-
+    
     #print("\n\n\n",dfAnalisisCompetencia,"\n\n\n")
 
     dfDensidadPalabra = {
@@ -49,8 +53,7 @@ def getGoogleSheet(data):
     df1 = pd.DataFrame.from_dict(dfAnalisisCompetencia, orient='index')
     df1 = df1.transpose()
 
-
-
+ 
     df2 = pd.DataFrame.from_dict(dfDensidadPalabra, orient='index')
     df2 = df2.transpose()
     #Escribir en google sheet
@@ -72,9 +75,12 @@ def getGoogleSheet(data):
     keywordResearch = sh.add_worksheet(title="KEYWORD RESEARCH", rows="1000", cols="20")
     encabezados = sh.add_worksheet(title="ENCABEZADOS", rows="100", cols="10")
 
+    #lista_hojas = sh.worksheets()
     # Seleccionar primera hoja
     #worksheet = sh.get_worksheet(0)       
     sh.del_worksheet(sh.get_worksheet(0)) #Elimina la hoja "Sheet1" que sale por defecto.
+    #sh.del_worksheet(analisisCompetencia) #Borra la hoja ANÁLISIS COMPETENCIA
+    #sh.del_worksheet(sh.worksheet("nombre hoja")) #Elimina la hoja "Sheet1" que sale por defecto.
     
     
     set_with_dataframe(analisisCompetencia, df1)
@@ -89,10 +95,9 @@ def getGoogleSheet(data):
 
 
     anchoCelda = redimencionarCelda(df1)
-    print(anchoCelda) #Funcion para redimencionar celda, se pasa dataframe y número de hoja de google sheet.
 
-    for letra, celda in enumerate(anchoCelda):
-        print("LA CELDA ES: ", celda)
+    #Redimencionar celda, se pasa dataframe y número de hoja de google sheet.
+    for letra, celda in enumerate(anchoCelda):        
         set_column_width(sh.get_worksheet(0), chr(65+letra), int(celda))
     
 

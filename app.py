@@ -24,6 +24,15 @@ def upload_form():
 	return render_template("espiar-competencia.html")
 
 
+@app.route('/crear-cuenta',methods=["GET"])
+def crear_cuenta():
+	return render_template('crear-cuenta.html')
+	
+
+@app.route('/iniciar-sesion',methods=["GET"])
+def iniciar_sesion():
+	return render_template('iniciar-sesion.html')
+	
 
 @app.route('/espiar-competencia',methods=["GET"])
 def espiar_competencia():

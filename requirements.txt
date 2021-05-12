@@ -22,3 +22,6 @@ websockets==8.1
 deepl-cli==0.0.14
 pyppeteer==0.2.5
 nltk==3.6.2
+gspread==3.7.0
+gspread-dataframe==3.2.1
+gspread-formatting==0.3.7
